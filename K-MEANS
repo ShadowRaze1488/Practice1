@@ -1,38 +1,38 @@
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_iris
-import numpy as np
+from sklearn.datasets import load_digits
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
+import numpy as np
 
-#
-irisData = load_iris()
+data = load_digits().data
+pca = PCA(2)
 
-# Создание массивов объектов
-X = irisData.data
-y = irisData.target
+# Transform the data
+df = pca.fit_transform(data)
 
-# Деление на обучающий и тестовый набор
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42)
+df.shape
 
-neighbors = np.arange(1, 8)
-train_accuracy = np.empty(len(neighbors))
-test_accuracy = np.empty(len(neighbors))
+kmeans = KMeans(n_clusters=4)
 
-# Перебор значений
-for i, k in enumerate(neighbors):
-    knn = KNeighborsClassifier(n_neighbors=k)
-    knn.fit(X_train, y_train)
+# predict the labels of clusters.
+label = kmeans.fit_predict(df)
 
-    # Вычисление точности обучающей и тестовой вбвыорки
-    train_accuracy[i] = knn.score(X_train, y_train)
-    test_accuracy[i] = knn.score(X_test, y_test)
+print(label)
 
-# График
-plt.plot(neighbors, test_accuracy, label='Testing dataset Accuracy')
-plt.plot(neighbors, train_accuracy, label='Training dataset Accuracy')
+filtered_label0 = df[label == 0]
 
+# filter rows of original data
+filtered_label2 = df[label == 2]
+
+filtered_label8 = df[label == 8]
+
+# Getting unique labels
+
+u_labels = np.unique(label)
+
+# plotting the results:
+
+for i in u_labels:
+    plt.scatter(df[label == i, 0], df[label == i, 1], label=i)
 plt.legend()
-plt.xlabel('n_neighbors')
-plt.ylabel('Accuracy')
 plt.show()
